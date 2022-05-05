@@ -143,7 +143,7 @@ class CovidNet(nn.Module):
         fc1out = F.relu(self.fc1(flattened))
         #fc1out = self.Dropout1(fc1out)#Modificación jdal
         fc2out = F.relu(self.fc2(fc1out))
-        fc2out = self.Dropout2(fc2out)#Modifiación jdal
+        #fc2out = self.Dropout2(fc2out)#Modifiación jdal
         logits = self.classifier(fc2out)
         return logits
 

@@ -13,6 +13,7 @@ from model.densenet import NewDenseNet, myDenseNet_v2
 from model.model_Deep_Explainer import CovidNet_DE
 import csv
 import numpy as np
+import cfg.ctt as ctt
 
 
 def write_score(writer, iter, mode, metrics):
@@ -122,7 +123,7 @@ def create_stats_files(path):
     return train_f, val_f
 
 
-def read_json_file(fname):
+def c(fname):
     with open(fname, 'r') as handle:
         return json.load(handle, object_hook=OrderedDict)
 
@@ -144,6 +145,9 @@ def read_filepaths(file):
             subjid, path, label = line.split(' ')
 
             paths.append(path)
+
+            #label = ctt.LABELS_MAPPING[label]
+
             labels.append(label)
     labes_array = np.array(labels)
     classes = np.unique(labes_array)

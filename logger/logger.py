@@ -1,7 +1,7 @@
 import logging
 import logging.config
 from pathlib import Path
-from utils import read_json
+from utils import read_json_file
 
 
 def setup_logging(save_dir, log_config='logger/logger_config.json', default_level=logging.INFO):
@@ -10,7 +10,7 @@ def setup_logging(save_dir, log_config='logger/logger_config.json', default_leve
     """
     log_config = Path(log_config)
     if log_config.is_file():
-        config = read_json(log_config)
+        config = read_json_file(log_config)
         # modify logging paths based on run config
         for _, handler in config['handlers'].items():
             if 'filename' in handler:

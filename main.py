@@ -8,6 +8,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 
 def main():
+    torch.cuda.empty_cache()
     args = get_arguments()
     SEED = args.seed
     torch.manual_seed(SEED)
@@ -51,7 +52,7 @@ def get_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('--new_training', action='store_true', default=False,
                         help='load saved_model as initial model')
-    parser.add_argument('--batch_size', type=int, default=32)
+    parser.add_argument('--batch_size', type=int, default=4)
     parser.add_argument('--log_interval', type=int, default=1000)
     parser.add_argument('--dataset_name', type=str, default="COVIDx")
     parser.add_argument('--nEpochs', type=int, default=20)
@@ -66,15 +67,15 @@ def get_arguments():
     parser.add_argument('--cuda', action='store_true', default=True)
     parser.add_argument('--resume', default='', type=str, metavar='PATH',
                         help='path to latest checkpoint (default: none)')
-    parser.add_argument('--model', type=str, default='CovidNet_Grad_CAM',
+    parser.add_argument('--model', type=str, default='COVIDNet',
                         choices=('COVIDNet','CovidNet_ResNet50', 'CovidNet_DenseNet', 'CovidNet_Grad_CAM','CovidNet_DE'))
     parser.add_argument('--opt', type=str, default='adam',
                         choices=('sgd', 'adam', 'rmsprop'))
     parser.add_argument('--dataset', type=str, default='/content/covid-chestxray-dataset/data',
                         help='path to dataset ')
-    parser.add_argument('--saved_model', type=str, default='/home/julian/Documents/PythonExperiments/COVIDNet/ModelSavedCoviNet/COVIDNet20200406_0412/COVIDNet_best_checkpoint.pth.tar',
+    parser.add_argument('--saved_model', type=str, default='/mnt/Data/AlvaroTFM/Alvaro-TFM/saved_model/COVIDNet_best_checkpoint.pth.tar',
                         help='path to save_model ')
-    parser.add_argument('--save', type=str, default='/home/julian/Documents/PythonExperiments/COVIDNet/ModelSavedCoviNet/COVIDNet' + util.datestr(),
+    parser.add_argument('--save', type=str, default='/mnt/Data/AlvaroTFM/Alvaro-TFM/ModelSavedCovidNet/COVIDNet' + util.datestr(),
                         help='path to checkpoint ')
     args = parser.parse_args()
     return args
