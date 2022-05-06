@@ -23,8 +23,6 @@ def main():
         model, optimizer, training_generator, val_generator, class_weight = initialize(args)
         Last_epoch = 0
 
-    #print(model)
-
     best_pred_loss = 0#lo cambie por balanced accuracy
     scheduler = ReduceLROnPlateau(optimizer, factor=0.5, patience=3, min_lr=1e-5, verbose=True)
     print('Checkpoint folder ', args.save)
@@ -77,6 +75,8 @@ def get_arguments():
                         help='path to save_model ')
     parser.add_argument('--save', type=str, default='/mnt/Data/AlvaroTFM/Alvaro-TFM/ModelSavedCovidNet/COVIDNet' + util.datestr(),
                         help='path to checkpoint ')
+    parser.add_argument('--train_split_file',type=str,default='train_split_alvaro.txt',help='path to train split file')
+    parser.add_argument('--test_split_file',type=str,default='test_split_alvaro.txt',help='path to train split file')
     args = parser.parse_args()
     return args
 

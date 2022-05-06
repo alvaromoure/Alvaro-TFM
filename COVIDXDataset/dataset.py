@@ -45,14 +45,14 @@ class COVIDxDataset(Dataset):
     Code for reading the COVIDxDataset
     """
 
-    def __init__(self, mode, n_classes=3, dataset_path='./datasets', dim=(224, 224)):
+    def __init__(self, mode, n_classes=3, dataset_path='./datasets', dim=(224, 224),train_file='train_split_alvaro',test_file='test_split_alvaro'):
         self.root = str(dataset_path)  # + '/' + mode + '/'
 
         self.CLASSES = n_classes
         self.dim = dim
         self.COVIDxDICT = {'pneumonia': 0, 'normal': 1, 'COVID-19': 2}
-        testfile = 'test_split_alvaro.txt'
-        trainfile = 'train_split_alvaro.txt'
+        testfile = test_file
+        trainfile = train_file
         if (mode == 'train'):
             self.paths, self.labels = read_filepaths(trainfile)
         elif (mode == 'test'):

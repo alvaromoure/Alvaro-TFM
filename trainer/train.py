@@ -22,7 +22,7 @@ def initialize(args):
 
    
     train_loader = COVIDxDataset(mode='train', n_classes=args.classes, dataset_path=args.dataset,
-                                 dim=(224, 224))
+                                 dim=(224, 224),train_file =args.train_split_file,test_file=args.test_split_file)
     #print(train_loader.)
     #------ Class weigths for sampling and for loss function -----------------------------------
     labels = np.unique(train_loader.labels)
@@ -42,7 +42,7 @@ def initialize(args):
     #print(class_weight.shape)
     #-------------------------------------------
     val_loader = COVIDxDataset(mode='test', n_classes=args.classes, dataset_path=args.dataset,
-                               dim=(224, 224))
+                               dim=(224, 224),train_file =args.train_split_file,test_file=args.test_split_file)
     #------------------------------------------------------------------------------------
     train_params = {'batch_size': args.batch_size,
                     'shuffle': True,
