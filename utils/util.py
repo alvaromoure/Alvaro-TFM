@@ -139,7 +139,7 @@ def read_filepaths(file):
         lines = f.read().splitlines()
 
         for idx, line in enumerate(lines):
-            if ('/ c o' in line):
+            if ('c o' in line):
                 break
             #print(line)    
             subjid, path, label = line.split(' ')
