@@ -51,6 +51,8 @@ class COVIDxDataset(Dataset):
         self.COVIDxDICT = {'pneumonia': 0, 'normal': 1, 'COVID-19': 2}
         testfile = test_file
         trainfile = train_file
+
+        self.transform = transform
         if (mode == 'train'):
             self.paths, self.labels = read_filepaths(trainfile)
         elif (mode == 'test'):
