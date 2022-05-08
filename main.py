@@ -23,15 +23,17 @@ def main():
         model, optimizer, training_generator, val_generator, class_weight = initialize(args)
         Last_epoch = 0
 
-    best_pred_loss = 0#lo cambie por balanced accuracy
+    best_pred_loss = 0 #lo cambie por balanced accuracy
     scheduler = ReduceLROnPlateau(optimizer, factor=0.5, patience=3, min_lr=1e-5, verbose=True)
     print('Checkpoint folder ', args.save)
     # writer = SummaryWriter(log_dir='../runs/' + args.model, comment=args.model)
     for epoch in range(1, args.nEpochs + 1):
         train(args, model, training_generator, optimizer, Last_epoch+epoch, class_weight)
+        print('Performing validation...')
         val_metrics, confusion_matrix = validation(args, model, val_generator, Last_epoch+epoch, class_weight)
         BACC = BalancedAccuray(confusion_matrix.numpy())
         val_metrics.replace({'bacc': BACC})
+        print('Saving this epochs model...')
         best_pred_loss = util.save_model(model, optimizer, args, val_metrics, Last_epoch+epoch, best_pred_loss, confusion_matrix)
         print(confusion_matrix)
         scheduler.step(val_metrics.avg_loss())

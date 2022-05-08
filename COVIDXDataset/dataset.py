@@ -24,7 +24,6 @@ def do_augmentation(image_tensor):
     augmented = array[None, ...]
     r_range = (0, (3 / 360.) * 2 * np.pi)
     cval = 0.
-
     augmented, _ = spatial_transforms.augment_spatial(
         augmented, seg=np.ones_like(augmented), patch_size=[augmented.shape[2], augmented.shape[3]],
         do_elastic_deform=True, alpha=(0., 100.), sigma=(8., 13.),
@@ -45,9 +44,8 @@ class COVIDxDataset(Dataset):
     Code for reading the COVIDxDataset
     """
 
-    def __init__(self, mode, n_classes=3, dataset_path='./datasets', dim=(224, 224),train_file='train_split_alvaro',test_file='test_split_alvaro'):
+    def __init__(self, mode, n_classes=3, dataset_path='./datasets', dim=(224, 224),train_file='train_split_alvaro',test_file='test_split_alvaro',transform=False):
         self.root = str(dataset_path)  # + '/' + mode + '/'
-
         self.CLASSES = n_classes
         self.dim = dim
         self.COVIDxDICT = {'pneumonia': 0, 'normal': 1, 'COVID-19': 2}
@@ -70,17 +68,19 @@ class COVIDxDataset(Dataset):
         label_tensor = torch.tensor(self.COVIDxDICT[self.labels[index]], dtype=torch.long)
         image_tensor = image_tensor.numpy()
 
-        if ra.random() > 0.5:
-            image_tensor = random_noise(image_tensor, mode='gaussian', mean=0.015, var=0.015)
+        if self.transform:
+            if ra.random() > 0.5:
+                image_tensor = random_noise(image_tensor, mode='gaussian', mean=0.015, var=0.015)
 
-        if ((label_tensor.numpy() == 2 and ra.random() > 0.17) or (
-                label_tensor.numpy() == 0 and ra.random() > 0.5)) and self.mode == 'train':
+            if ((label_tensor.numpy() == 2 and ra.random() > 0.17) or (
+                    label_tensor.numpy() == 0 and ra.random() > 0.5)) and self.mode == 'train':
 
-            augmented_tensor = do_augmentation(image_tensor)
-            augmented_tensor = torch.from_numpy(augmented_tensor)
-            augmented_tensor = torch.squeeze(augmented_tensor, dim=0)
-
-            final_tensor = augmented_tensor
+                augmented_tensor = do_augmentation(image_tensor)
+                augmented_tensor = torch.from_numpy(augmented_tensor)
+                augmented_tensor = torch.squeeze(augmented_tensor, dim=0)
+                final_tensor = augmented_tensor
+            else:
+                final_tensor = torch.FloatTensor(image_tensor)
 
         else:
             final_tensor = torch.FloatTensor(image_tensor)

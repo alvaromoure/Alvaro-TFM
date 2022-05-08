@@ -206,9 +206,6 @@ def print_summary(args, epoch, num_samples, metrics, mode=''):
 
 
 def confusion_matrix(nb_classes):
-
-
-
     confusion_matrix = torch.zeros(nb_classes, nb_classes)
     with torch.no_grad():
         for i, (inputs, classes) in enumerate(dataloaders['val']):
