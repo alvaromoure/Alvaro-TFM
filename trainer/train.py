@@ -9,9 +9,11 @@ from model.metric import accuracy, top_k_acc
 from COVIDXDataset.dataset import COVIDxDataset
 from torch.utils.data import DataLoader
 from sklearn.metrics import balanced_accuracy_score
+from warnings import simplefilter
 
 
 def initialize(args):
+    simplefilter(action='ignore', category=FutureWarning)
     if args.device is not None:
         os.environ["CUDA_VISIBLE_DEVICES"] = str(args.device)
     model = select_model(args)
