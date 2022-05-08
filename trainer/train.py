@@ -46,11 +46,11 @@ def initialize(args):
     #------------------------------------------------------------------------------------
     train_params = {'batch_size': args.batch_size,
                     'shuffle': True,
-                    'num_workers': 4}#'sampler' : sampler
+                    'num_workers': args.num_workers}#'sampler' : sampler
     
     test_params = {'batch_size': args.batch_size,
                    'shuffle': True,
-                   'num_workers': 4}
+                   'num_workers': args.num_workers}
     #------------------------------------------------------------------------------------------
     training_generator = DataLoader(train_loader, **train_params)
     val_generator = DataLoader(val_loader, **test_params)

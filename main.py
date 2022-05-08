@@ -33,7 +33,6 @@ def main():
         BACC = BalancedAccuray(confusion_matrix.numpy())
         val_metrics.replace({'bacc': BACC})
         best_pred_loss = util.save_model(model, optimizer, args, val_metrics, Last_epoch+epoch, best_pred_loss, confusion_matrix)
-
         print(confusion_matrix)
         scheduler.step(val_metrics.avg_loss())
 
@@ -77,6 +76,7 @@ def get_arguments():
                         help='path to checkpoint ')
     parser.add_argument('--train_split_file',type=str,default='train_split_alvaro.txt',help='path to train split file')
     parser.add_argument('--test_split_file',type=str,default='test_split_alvaro.txt',help='path to train split file')
+    parser.add_argument('--num_workers',type=int,default=2,help='used to specify the number of workers')
     args = parser.parse_args()
     return args
 
