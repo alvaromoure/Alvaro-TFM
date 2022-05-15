@@ -1,3 +1,5 @@
+import time
+
 import torch
 import os
 import torch.nn as nn
@@ -72,7 +74,7 @@ def train(args, model, trainloader, optimizer, epoch, class_weight):
     #        m.weight.requires_grad = False
     #        m.bias.requires_grad = False
     # -----------------------------------------------------
-
+    start_time = time.time()
     for batch_idx, input_tensors in enumerate(trainloader):
         optimizer.zero_grad()
         input_data, target = input_tensors
@@ -99,8 +101,9 @@ def train(args, model, trainloader, optimizer, epoch, class_weight):
         bacc = balanced_accuracy_score(target.cpu().detach().numpy(), output_class.cpu().detach().numpy())
         metrics.update({'correct': correct, 'total': total, 'loss': loss.item(), 'accuracy': acc, 'bacc': bacc})
         print_stats(args, epoch, num_samples, trainloader, metrics)
+    elapsed_time = time.time()-start_time
 
-    print_summary(args, epoch, num_samples, metrics, mode="Training")
+    print_summary(args, epoch, num_samples, metrics, mode="Training",elapsed_time=elapsed_time)
     return metrics
 
 
@@ -120,6 +123,7 @@ def validation(args, model, testloader, epoch, class_weight):
     metrics = Metrics('')
     metrics.reset()
     confusion_matrix = torch.zeros(args.classes, args.classes)
+    start_time = time.time()
     with torch.no_grad():
         for batch_idx, input_tensors in enumerate(testloader):
             input_data, target = input_tensors
@@ -140,9 +144,9 @@ def validation(args, model, testloader, epoch, class_weight):
             for t, p in zip(target.cpu().view(-1), preds.cpu().view(-1)):
                 confusion_matrix[t.long(), p.long()] += 1
             metrics.update({'correct': correct, 'total': total, 'loss': loss.item(), 'accuracy': acc, 'bacc': bacc})
-            print_stats(args, epoch, num_samples, testloader, metrics)
-
-    print_summary(args, epoch, num_samples, metrics, mode="Validation")
+            #print_stats(args, epoch, num_samples, testloader, metrics)
+    elapsed_time = time-time() - start_time
+    print_summary(args, epoch, num_samples, metrics,elapsed_time, mode="Validation")
     return metrics, confusion_matrix
 
 

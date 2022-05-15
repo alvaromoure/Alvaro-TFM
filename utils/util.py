@@ -51,43 +51,38 @@ def showgradients(model):
         print("GRADS= \n", param.grad)
 
 
-
-
-
 def datestr():
     now = time.gmtime()
     return '{}{:02}{:02}_{:02}{:02}'.format(now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min)
 
 
-def save_checkpoint(state, is_best, path,  filename='last'):
-
-    name = os.path.join(path, filename+'_checkpoint.pth.tar')
+def save_checkpoint(state, is_best, path, filename='last'):
+    name = os.path.join(path, filename + '_checkpoint.pth.tar')
     print(name)
     torch.save(state, name)
 
 
-
-def save_model(model,optimizer, args, metrics, epoch, best_pred_loss,confusion_matrix):
+def save_model(model, optimizer, args, metrics, epoch, best_pred_loss, confusion_matrix):
     loss = metrics.data['bacc']
     save_path = args.save
     make_dirs(save_path)
-    
+
     with open(save_path + '/training_arguments.txt', 'w') as f:
         json.dump(args.__dict__, f, indent=2)
-    
+
     is_best = False
-    #print(loss)
-    #print(best_pred_loss)
+    # print(loss)
+    # print(best_pred_loss)
     if loss > best_pred_loss:
         is_best = True
         best_pred_loss = loss
         save_checkpoint({'epoch': epoch,
                          'state_dict': model.state_dict(),
                          'optimizer': optimizer.state_dict(),
-                         'metrics': metrics.data },
+                         'metrics': metrics.data},
                         is_best, save_path, args.model + "_best")
-        np.save(save_path + 'best_confusion_matrix.npy',confusion_matrix.cpu().numpy())
-            
+        np.save(save_path + 'best_confusion_matrix.npy', confusion_matrix.cpu().numpy())
+
     else:
         save_checkpoint({'epoch': epoch,
                          'state_dict': model.state_dict(),
@@ -97,6 +92,7 @@ def save_model(model,optimizer, args, metrics, epoch, best_pred_loss,confusion_m
 
     return best_pred_loss
 
+
 def load_model(args):
     checkpoint = torch.load(args.saved_model)
     model = select_model(args)
@@ -105,7 +101,7 @@ def load_model(args):
     if (args.cuda):
         model.cuda()
 
-    optimizer = select_optimizer(args,model)
+    optimizer = select_optimizer(args, model)
     optimizer.load_state_dict(checkpoint['optimizer'])
     epoch = checkpoint['epoch']
     return model, optimizer, epoch
@@ -113,7 +109,6 @@ def load_model(args):
 
 def make_dirs(path):
     if not os.path.exists(path):
-
         os.makedirs(path)
 
 
@@ -141,12 +136,12 @@ def read_filepaths(file):
         for idx, line in enumerate(lines):
             if ('c o' in line):
                 break
-            #print(line)    
+            # print(line)
             subjid, path, label = line.split(' ')
 
             paths.append(path)
 
-            #label = ctt.LABELS_MAPPING[label]
+            # label = ctt.LABELS_MAPPING[label]
 
             labels.append(label)
     labes_array = np.array(labels)
@@ -155,13 +150,14 @@ def read_filepaths(file):
         print('Clase={}-Samples={}'.format(i, np.sum(labes_array == i)))
     return paths, labels
 
+
 def select_model(args):
     if args.model == 'COVIDNet':
         return CovidNet(args.classes)
     elif args.model == 'CovidNet_ResNet50':
         return CovidNet_ResNet50(args.classes)
     elif args.model == 'CovidNet_DenseNet':
-        return NewDenseNet(args.classes)#myDenseNet_v2(args.classes)
+        return NewDenseNet(args.classes)  # myDenseNet_v2(args.classes)
     elif args.model == 'CovidNet_Grad_CAM':
         return CovidNet_Grad_CAM(args.classes)
     elif args.model == 'CovidNet_DE':
@@ -180,29 +176,32 @@ def select_optimizer(args, model):
 def print_stats(args, epoch, num_samples, trainloader, metrics):
     if (num_samples % args.log_interval == 1):
         print("Epoch:{:2d}\tSample:{:5d}/{:5d}\tLoss:{:.4f}\tAccuracy:{:.2f}".format(epoch,
-                                                                                         num_samples,
-                                                                                         len(
-                                                                                             trainloader) * args.batch_size,
-                                                                                         metrics.data[
-                                                                                             'loss'] / num_samples,
-                                                                                         metrics.data[
-                                                                                             'correct'] /
-                                                                                         metrics.data[
-                                                                                             'total']))
+                                                                                     num_samples,
+                                                                                     len(
+                                                                                         trainloader) * args.batch_size,
+                                                                                     metrics.data[
+                                                                                         'loss'] / num_samples,
+                                                                                     metrics.data[
+                                                                                         'correct'] /
+                                                                                     metrics.data[
+                                                                                         'total']))
 
 
-def print_summary(args, epoch, num_samples, metrics, mode=''):
-    print(mode + "\n SUMMARY EPOCH:{:2d}\tSample:{:5d}/{:5d}\tLoss:{:.4f}\tAccuracy:{:.2f}\tBalancedAccuracy:{:.2f}\n".format(epoch,
-                                                                                                     num_samples,
-                                                                                                     num_samples ,
-                                                                                                     metrics.data[
-                                                                                                         'loss'] / num_samples,                                                                             
-                                                                                                     metrics.data[
-                                                                                                         'correct'] /
-                                                                                                     metrics.data[
-                                                                                                         'total'],
-                                                                                                     metrics.data[
-                                                                                                         'bacc']/num_samples))
+def print_summary(args, epoch, num_samples, metrics,elapsed_time, mode='',):
+    print(
+        mode + "\n SUMMARY EPOCH:{:2d}\tSample:{:5d}/{:5d}\tLoss:{:.4f}\tAccuracy:{:.2f}\tBalancedAccuracy:{:.2f}\tElapsed Time: {:.2f}\n".format(
+            epoch,
+            num_samples,
+            num_samples,
+            metrics.data[
+                'loss'] / num_samples,
+            metrics.data[
+                'correct'] /
+            metrics.data[
+                'total'],
+            metrics.data[
+                'bacc'] / num_samples,
+            elapsed_time))
 
 
 def confusion_matrix(nb_classes):
@@ -214,9 +213,10 @@ def confusion_matrix(nb_classes):
             outputs = model_ft(inputs)
             _, preds = torch.max(outputs, 1)
             for t, p in zip(classes.view(-1), preds.view(-1)):
-                    confusion_matrix[t.long(), p.long()] += 1
+                confusion_matrix[t.long(), p.long()] += 1
 
     print(confusion_matrix)
+
 
 class Metrics:
     def __init__(self, path, keys=None, writer=None):
@@ -226,7 +226,7 @@ class Metrics:
                      'total': 0,
                      'loss': 0,
                      'accuracy': 0,
-                     'bacc':0,
+                     'bacc': 0,
                      }
         self.save_path = path
 
@@ -242,7 +242,7 @@ class Metrics:
     def update(self, values):
         for key in self.data:
             self.data[key] += values[key]
-    
+
     def replace(self, values):
         for key in values:
             self.data[key] = values[key]
