@@ -12,6 +12,7 @@ from COVIDXDataset.dataset import COVIDxDataset
 from torch.utils.data import DataLoader
 from sklearn.metrics import balanced_accuracy_score
 from warnings import simplefilter
+import wandb
 
 
 def initialize(args):
@@ -102,7 +103,7 @@ def train(args, model, trainloader, optimizer, epoch, class_weight):
         metrics.update({'correct': correct, 'total': total, 'loss': loss.item(), 'accuracy': acc, 'bacc': bacc})
         print_stats(args, epoch, num_samples, trainloader, metrics)
     elapsed_time = time.time()-start_time
-
+    wandb.log({'epoch':epoch,'metrics':metrics,'elaped_time':elapsed_time})
     print_summary(args, epoch, num_samples, metrics, mode="Training",elapsed_time=elapsed_time)
     return metrics
 

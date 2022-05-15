@@ -5,11 +5,13 @@ import utils.util as util
 from trainer.train import initialize, train, validation, initialize_from_saved_model
 from torch.utils.tensorboard import SummaryWriter
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+import wandb
 
 
 def main():
     torch.cuda.empty_cache()
     args = get_arguments()
+    wandb.init(project='Alvaro-TFM-KAGGLE',entity='alvaromoureupm')
     SEED = args.seed
     torch.manual_seed(SEED)
     torch.backends.cudnn.deterministic = True
