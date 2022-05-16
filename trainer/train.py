@@ -50,7 +50,7 @@ def initialize(args):
     # ------------------------------------------------------------------------------------
     train_params = {'batch_size': args.batch_size,
                     'shuffle': True,
-                    'num_workers': args.num_workers}  # 'sampler' : sampler
+                    'num_workers': args.num_workers}
 
     test_params = {'batch_size': args.batch_size,
                    'shuffle': True,

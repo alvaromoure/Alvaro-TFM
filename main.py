@@ -11,7 +11,17 @@ import wandb
 def main():
     torch.cuda.empty_cache()
     args = get_arguments()
-    wandb.init(project='Alvaro-TFM-KAGGLE',entity='alvaromoureupm')
+    wandb_config = dict(
+        batch_size = args.batch_size,
+        nEpochs = args.nEpochs,
+        learning_rate = args.lr,
+        model = args.model,
+        optimizer = args.opt
+    )
+
+    wandb.init(project='Alvaro-TFM-KAGGLE',entity='alvaromoureupm',config=wandb_config)
+    wandb.run.name = args.name
+
     SEED = args.seed
     torch.manual_seed(SEED)
     torch.backends.cudnn.deterministic = True
@@ -80,6 +90,7 @@ def get_arguments():
     parser.add_argument('--train_split_file',type=str,default='train_split_alvaro.txt',help='path to train split file')
     parser.add_argument('--test_split_file',type=str,default='test_split_alvaro.txt',help='path to train split file')
     parser.add_argument('--num_workers',type=int,default=2,help='used to specify the number of workers')
+    parser.add_argument('--name', type=str, default=wandb.run.id, help='Used to specify a run name for wandb platform')
     args = parser.parse_args()
     return args
 
