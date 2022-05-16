@@ -103,7 +103,7 @@ def train(args, model, trainloader, optimizer, epoch, class_weight):
         metrics.update({'correct': correct, 'total': total, 'loss': loss.item(), 'accuracy': acc, 'bacc': bacc})
         print_stats(args, epoch, num_samples, trainloader, metrics)
     elapsed_time = time.time()-start_time
-    wandb.log({'epoch':epoch,'metrics':metrics,'elaped_time':elapsed_time})
+    wandb.log({'epoch':epoch,'accuracy':metrics.avg_acc(),'loss':metrics.avg_loss(),'elaped_time':elapsed_time})
     print_summary(args, epoch, num_samples, metrics, mode="Training",elapsed_time=elapsed_time)
     return metrics
 
@@ -145,7 +145,7 @@ def validation(args, model, testloader, epoch, class_weight):
             for t, p in zip(target.cpu().view(-1), preds.cpu().view(-1)):
                 confusion_matrix[t.long(), p.long()] += 1
             metrics.update({'correct': correct, 'total': total, 'loss': loss.item(), 'accuracy': acc, 'bacc': bacc})
-            #print_stats(args, epoch, num_samples, testloader, metrics)
+            print_stats(args, epoch, num_samples, testloader, metrics)
     elapsed_time = time-time() - start_time
     print_summary(args, epoch, num_samples, metrics,elapsed_time, mode="Validation")
     return metrics, confusion_matrix

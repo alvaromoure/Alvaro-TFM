@@ -28,7 +28,6 @@ def main():
     best_pred_loss = 0 #lo cambie por balanced accuracy
     scheduler = ReduceLROnPlateau(optimizer, factor=0.5, patience=3, min_lr=1e-5, verbose=True)
     print('Checkpoint folder ', args.save)
-    # writer = SummaryWriter(log_dir='../runs/' + args.model, comment=args.model)
     for epoch in range(1, args.nEpochs + 1):
         train(args, model, training_generator, optimizer, Last_epoch+epoch, class_weight)
         print('Performing validation...')
