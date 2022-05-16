@@ -146,7 +146,7 @@ def validation(args, model, testloader, epoch, class_weight):
                 confusion_matrix[t.long(), p.long()] += 1
             metrics.update({'correct': correct, 'total': total, 'loss': loss.item(), 'accuracy': acc, 'bacc': bacc})
             print_stats(args, epoch, num_samples, testloader, metrics)
-    elapsed_time = time-time() - start_time
+    elapsed_time = time.time() - start_time
     print_summary(args, epoch, num_samples, metrics,elapsed_time, mode="Validation")
     return metrics, confusion_matrix
 
