@@ -10,7 +10,6 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 import wandb
 import plotly.express as px
 
-
 def main():
     torch.cuda.empty_cache()
     args = get_arguments()
@@ -53,10 +52,10 @@ def main():
         val_metrics.replace({'bacc': BACC})
         wandb.log({'epoch': epoch, 'validation accuracy': val_metrics.avg_acc(),
                    'val loss': val_metrics.avg_loss(), 'val balanced accuracy': BACC, 'elaped_time': elapsed_time})
-        fig = px.imshow(confusion_matrix, text_auto=True,
+
+        wandb.log({f'Confusion Matrix Epoch {epoch}', px.imshow(confusion_matrix, text_auto=True,
                         x=['pneumonia', 'normal', 'COVID-19'],
-                        y=['pneumonia', 'normal', 'COVID-19'])
-        wandb.log({f'Confusion Matrix Epoch {epoch}', fig})
+                        y=['pneumonia', 'normal', 'COVID-19'])})
         print('Saving this epochs model...')
         best_pred_loss = util.save_model(model, optimizer, args,
                                          val_metrics, Last_epoch+epoch,
