@@ -86,7 +86,7 @@ def train(args, model, trainloader, optimizer, epoch, class_weight):
         # loss = focal_loss(output, target)
         if args.model == 'CovidNet_DenseNet':
             output = output[-1]
-        loss = criterion(output, target, weight=class_weight)
+        loss = crossentropy_loss(output, target, weight=class_weight)
         loss.backward()
         optimizer.step()
         correct, total, acc = accuracy(output, target)
