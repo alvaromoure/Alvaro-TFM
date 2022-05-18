@@ -19,9 +19,10 @@ def initialize(args):
     simplefilter(action='ignore', category=FutureWarning)
     if args.device is not None:
         os.environ["CUDA_VISIBLE_DEVICES"] = str(args.device)
-    model = select_model(args)
 
+    model = select_model(args)
     optimizer = select_optimizer(args, model)
+
     if (args.cuda):
         model.cuda()
 
@@ -32,13 +33,12 @@ def initialize(args):
     labels = np.unique(train_loader.labels)
     print(labels)
     class_weight = compute_class_weight('balanced', labels, train_loader.labels)
-    # weights_sample = compute_sample_weight('balanced',train_loader.labels)
-    # print(np.unique(weights_sample))
+
+
     # ---------- Alphabetical order in labels does not correspond to class order in COVIDxDataset-----
     class_weight = class_weight[::-1]
     # ---------------------------------------------------------------------------------
-    # weights_sample = torch.DoubleTensor(weights_sample)
-    # sampler = torch.utils.data.sampler.WeightedRandomSampler(weights_sample, len(weights_sample))
+
     if (args.cuda):
         class_weight = torch.from_numpy(class_weight.astype(float)).cuda()
     else:
@@ -82,23 +82,16 @@ def train(args, model, trainloader, optimizer, epoch, class_weight):
         if (args.cuda):
             input_data = input_data.cuda()
             target = target.cuda()
-        # print(input_data.shape)
         output = model(input_data)
-        # print(output.shape)
-        # print(target.shape)
         # loss = focal_loss(output, target)
         if args.model == 'CovidNet_DenseNet':
             output = output[-1]
-
-        loss = crossentropy_loss(output, target, weight=class_weight)
+        loss = criterion(output, target, weight=class_weight)
         loss.backward()
         optimizer.step()
         correct, total, acc = accuracy(output, target)
-
         num_samples = batch_idx * args.batch_size + 1
         _, output_class = output.max(1)
-        # print(output_class)
-        # print(target)
         bacc = balanced_accuracy_score(target.cpu().detach().numpy(), output_class.cpu().detach().numpy())
         metrics.update({'correct': correct, 'total': total, 'loss': loss.item(), 'accuracy': acc, 'bacc': bacc})
         print_stats(args, epoch, num_samples, trainloader, metrics)

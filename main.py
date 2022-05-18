@@ -1,4 +1,6 @@
 import argparse
+import time
+import os
 import torch
 import numpy as np
 import utils.util as util
@@ -18,10 +20,8 @@ def main():
         model = args.model,
         optimizer = args.opt
     )
-
     wandb.init(project='Alvaro-TFM-KAGGLE',entity='alvaromoureupm',config=wandb_config)
     wandb.run.name = args.name
-
     SEED = args.seed
     torch.manual_seed(SEED)
     torch.backends.cudnn.deterministic = True
@@ -39,15 +39,27 @@ def main():
     scheduler = ReduceLROnPlateau(optimizer, factor=0.5, patience=3, min_lr=1e-5, verbose=True)
     print('Checkpoint folder ', args.save)
     for epoch in range(1, args.nEpochs + 1):
-        train(args, model, training_generator, optimizer, Last_epoch+epoch, class_weight)
+        start_time = time.time()
+        train_metrics = train(args, model, training_generator, optimizer, Last_epoch+epoch, class_weight)
+        elapsed_time = time.time()-start_time
+        wandb.log({'epoch': epoch, 'train accuracy': train_metrics.avg_acc(),
+                   'train loss': train_metrics.avg_loss(),'train balanced accuracy':0, 'elaped_time': elapsed_time})
         print('Performing validation...')
+        start_time = time.time()
         val_metrics, confusion_matrix = validation(args, model, val_generator, Last_epoch+epoch, class_weight)
+        elapsed_time = time.time()-start_time
         BACC = BalancedAccuray(confusion_matrix.numpy())
         val_metrics.replace({'bacc': BACC})
+        wandb.log({'epoch': epoch, 'validation accuracy': val_metrics.avg_acc(),
+                   'val loss': val_metrics.avg_loss(), 'val balanced accuracy': BACC, 'elaped_time': elapsed_time})
         print('Saving this epochs model...')
-        best_pred_loss = util.save_model(model, optimizer, args, val_metrics, Last_epoch+epoch, best_pred_loss, confusion_matrix)
+        best_pred_loss = util.save_model(model, optimizer, args,
+                                         val_metrics, Last_epoch+epoch,
+                                         best_pred_loss, confusion_matrix)
         print(confusion_matrix)
         scheduler.step(val_metrics.avg_loss())
+        print('Saving model to wandb')
+        wandb.save(os.path.join(args.save,args.model + '_best'+'_checkpoint.pth.tar'))
 
 def BalancedAccuray(CM):
     Nc = CM.shape[0]

@@ -81,6 +81,7 @@ def save_model(model, optimizer, args, metrics, epoch, best_pred_loss, confusion
                          'optimizer': optimizer.state_dict(),
                          'metrics': metrics.data},
                         is_best, save_path, args.model + "_best")
+
         np.save(save_path + 'best_confusion_matrix.npy', confusion_matrix.cpu().numpy())
 
     else:
