@@ -12,8 +12,6 @@ from COVIDXDataset.dataset import COVIDxDataset
 from torch.utils.data import DataLoader
 from sklearn.metrics import balanced_accuracy_score
 from warnings import simplefilter
-import wandb
-
 
 def initialize(args):
     simplefilter(action='ignore', category=FutureWarning)
@@ -137,11 +135,6 @@ def validation(args, model, testloader, epoch, class_weight):
             bacc = balanced_accuracy_score(labels, predictions)
             for t, p in zip(target.cpu().view(-1), preds.cpu().view(-1)):
                 confusion_matrix[t.long(), p.long()] += 1
-
-            cm = wandb.plot.confusion_matrix(y_true=labels, preds=predictions,
-                                             class_names=['pneumonia', 'normal', 'COVID-19'])
-            wandb.log({f'conf_matrix_valdation_Epoch={epoch}': cm})
-
             metrics.update({'correct': correct, 'total': total, 'loss': loss.item(), 'accuracy': acc, 'bacc': bacc})
             print_stats(args, epoch, num_samples, testloader, metrics)
     elapsed_time = time.time() - start_time
