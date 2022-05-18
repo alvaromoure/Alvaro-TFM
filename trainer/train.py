@@ -34,7 +34,6 @@ def initialize(args):
     print(labels)
     class_weight = compute_class_weight('balanced', labels, train_loader.labels)
 
-
     # ---------- Alphabetical order in labels does not correspond to class order in COVIDxDataset-----
     class_weight = class_weight[::-1]
     # ---------------------------------------------------------------------------------
@@ -95,9 +94,8 @@ def train(args, model, trainloader, optimizer, epoch, class_weight):
         bacc = balanced_accuracy_score(target.cpu().detach().numpy(), output_class.cpu().detach().numpy())
         metrics.update({'correct': correct, 'total': total, 'loss': loss.item(), 'accuracy': acc, 'bacc': bacc})
         print_stats(args, epoch, num_samples, trainloader, metrics)
-    elapsed_time = time.time()-start_time
-    wandb.log({'epoch':epoch,'accuracy':metrics.avg_acc(),'loss':metrics.avg_loss(),'elaped_time':elapsed_time})
-    print_summary(args, epoch, num_samples, metrics, mode="Training",elapsed_time=elapsed_time)
+    elapsed_time = time.time() - start_time
+    print_summary(args, epoch, num_samples, metrics, mode="Training", elapsed_time=elapsed_time)
     return metrics
 
 
@@ -134,13 +132,20 @@ def validation(args, model, testloader, epoch, class_weight):
             correct, total, acc = accuracy(output, target)
             num_samples = batch_idx * args.batch_size + 1
             _, preds = torch.max(output, 1)
-            bacc = balanced_accuracy_score(target.cpu().detach().numpy(), preds.cpu().detach().numpy())
+            predictions = target.cpu().detach().numpy()
+            labels =  preds.cpu().detach().numpy()
+            bacc = balanced_accuracy_score(labels, predictions)
             for t, p in zip(target.cpu().view(-1), preds.cpu().view(-1)):
                 confusion_matrix[t.long(), p.long()] += 1
+
+            cm = wandb.plot.confusion_matrix(y_true=labels, preds=predictions,
+                                             class_names=['pneumonia', 'normal', 'COVID-19'])
+            wandb.log({f'conf_matrix_valdation_Epoch={epoch}': cm})
+
             metrics.update({'correct': correct, 'total': total, 'loss': loss.item(), 'accuracy': acc, 'bacc': bacc})
             print_stats(args, epoch, num_samples, testloader, metrics)
     elapsed_time = time.time() - start_time
-    print_summary(args, epoch, num_samples, metrics,elapsed_time, mode="Validation")
+    print_summary(args, epoch, num_samples, metrics, elapsed_time, mode="Validation")
     return metrics, confusion_matrix
 
 

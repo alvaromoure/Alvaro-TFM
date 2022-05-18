@@ -43,7 +43,7 @@ def main():
         train_metrics = train(args, model, training_generator, optimizer, Last_epoch+epoch, class_weight)
         elapsed_time = time.time()-start_time
         wandb.log({'epoch': epoch, 'train accuracy': train_metrics.avg_acc(),
-                   'train loss': train_metrics.avg_loss(),'train balanced accuracy':0, 'elaped_time': elapsed_time})
+                   'train loss': train_metrics.avg_loss(), 'elaped_time': elapsed_time})
         print('Performing validation...')
         start_time = time.time()
         val_metrics, confusion_matrix = validation(args, model, val_generator, Last_epoch+epoch, class_weight)
@@ -58,8 +58,8 @@ def main():
                                          best_pred_loss, confusion_matrix)
         print(confusion_matrix)
         scheduler.step(val_metrics.avg_loss())
-        print('Saving model to wandb')
-        wandb.save(os.path.join(args.save,args.model + '_best'+'_checkpoint.pth.tar'))
+    print('Saving model to wandb')
+    wandb.save(os.path.join(args.save,args.model + '_best'+'_checkpoint.pth.tar'))
 
 def BalancedAccuray(CM):
     Nc = CM.shape[0]
