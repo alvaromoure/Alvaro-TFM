@@ -53,9 +53,10 @@ def main():
         wandb.log({'epoch': epoch, 'validation accuracy': val_metrics.avg_acc(),
                    'val loss': val_metrics.avg_loss(), 'val balanced accuracy': BACC, 'elaped_time': elapsed_time})
 
-        wandb.log({f'Confusion Matrix Epoch {epoch}', px.imshow(confusion_matrix, text_auto=True,
+        wandb.log({f'Confusion Matrix Epoch {epoch}': px.imshow(confusion_matrix, text_auto=True,
                         x=['pneumonia', 'normal', 'COVID-19'],
                         y=['pneumonia', 'normal', 'COVID-19'])})
+
         print('Saving this epochs model...')
         best_pred_loss = util.save_model(model, optimizer, args,
                                          val_metrics, Last_epoch+epoch,
