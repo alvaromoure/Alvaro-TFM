@@ -8,12 +8,13 @@ from trainer.train import initialize, train, validation, initialize_from_saved_m
 from torch.utils.tensorboard import SummaryWriter
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import wandb
-import plotly.express as px
+import json
 
 def main():
     torch.cuda.empty_cache()
     args = get_arguments()
-    wandb.init(project='Alvaro-TFM-KAGGLE',entity='alvaromoureupm',config=args.wandb)
+    wandb_config = json.loads(args.wandb)
+    wandb.init(project='Alvaro-TFM-KAGGLE',entity='alvaromoureupm',config=wandb_config)
     wandb.run.name = args.name
     SEED = args.seed
     torch.manual_seed(SEED)
@@ -101,7 +102,7 @@ def get_arguments():
     parser.add_argument('--test_split_file',type=str,default='test_split_alvaro.txt',help='path to train split file')
     parser.add_argument('--num_workers',type=int,default=2,help='used to specify the number of workers')
     parser.add_argument('--name', type=str, default='', help='Used to specify a run name for wandb platform')
-    parser.add_argument('--wandb',type=dict,default='',help='Include wandb configuration here')
+    parser.add_argument('--wandb',type=str,default='',help='Include wandb configuration here')
     args = parser.parse_args()
     return args
 
