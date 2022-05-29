@@ -101,6 +101,7 @@ def get_arguments():
     parser.add_argument('--test_split_file',type=str,default='test_split_alvaro.txt',help='path to train split file')
     parser.add_argument('--num_workers',type=int,default=2,help='used to specify the number of workers')
     parser.add_argument('--name', type=str, default='', help='Used to specify a run name for wandb platform')
+    parser.add_argument('--wandb',type=str,default='',help='Include wandb configuration here')
     args = parser.parse_args()
     return args
 
