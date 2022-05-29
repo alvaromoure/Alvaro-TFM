@@ -9,6 +9,7 @@ from torch.utils.tensorboard import SummaryWriter
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import wandb
 import json
+import plotly.express as px
 
 def main():
     torch.cuda.empty_cache()
