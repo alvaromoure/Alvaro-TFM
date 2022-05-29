@@ -13,7 +13,18 @@ import json
 def main():
     torch.cuda.empty_cache()
     args = get_arguments()
-    wandb_config = json.loads(args.wandb)
+    wandb_config = dict(
+        epochs=args.nEpochs,
+        learning_rate= args.lr,
+        batch_size=args.batch_size,
+        opt=args.opt,
+        classes=args.classes,
+        save_path=args.save,
+        model=args.model,
+        train_split_file=args.train_split_file,
+        test_split_file=args.test_split_file,
+        used_datasets = args.wandb
+    )
     wandb.init(project='Alvaro-TFM-KAGGLE',entity='alvaromoureupm',config=wandb_config)
     wandb.run.name = args.name
     SEED = args.seed
