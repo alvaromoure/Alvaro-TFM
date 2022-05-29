@@ -13,8 +13,8 @@ import plotly.express as px
 def main():
     torch.cuda.empty_cache()
     args = get_arguments()
-    #wandb.init(project='Alvaro-TFM-KAGGLE',entity='alvaromoureupm',config=args.wandb)
-    #wandb.run.name = args.name
+    wandb.init(project='Alvaro-TFM-KAGGLE',entity='alvaromoureupm',config=args.wandb)
+    wandb.run.name = args.name
     SEED = args.seed
     torch.manual_seed(SEED)
     torch.backends.cudnn.deterministic = True
@@ -81,7 +81,7 @@ def get_arguments():
     parser.add_argument('--classes', type=int, default=3)
     parser.add_argument('--inChannels', type=int, default=1)
     parser.add_argument('--lr', default=2e-5, type=float,
-                        help='learning rate (default: 1e-3)')
+                        help='learning rate (default: 2e-5)')
     parser.add_argument('--weight_decay', default=1e-7, type=float,
                         help='weight decay (default: 1e-6)')
     parser.add_argument('--cuda', action='store_true', default=True)
