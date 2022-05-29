@@ -138,6 +138,7 @@ class CovidNet(nn.Module):
         pepx41 = self.pexp4_1(F.max_pool2d(pepx31, 2) + F.max_pool2d(pepx32, 2) + F.max_pool2d(pepx32, 2) + F.max_pool2d(pepx34, 2)+ F.max_pool2d(pepx35, 2)+ F.max_pool2d(pepx36, 2)+ F.max_pool2d(out_conv3_1x1,2))
         pepx42 = self.pexp4_2(pepx41 + out_conv4_1x1)
         pepx43 = self.pexp4_3(pepx41 + pepx42 + out_conv4_1x1)
+
         flattened = self.flatten(pepx41 + pepx42 + pepx43 + out_conv4_1x1)
 
         fc1out = F.relu(self.fc1(flattened))

@@ -1,9 +1,9 @@
-
 import torchvision.models as models
 from torch import nn
 import torch.nn.functional as F
 from torch.nn.modules.linear import Linear
 import torch
+
 
 def addDropout(net, p=0.1):
     for name in net.features._modules.keys():
@@ -11,6 +11,7 @@ def addDropout(net, p=0.1):
             net.features._modules[name] = addDropoutRec(net.features._modules[name], p=p)
     net.classifier = addDropoutRec(net.classifier, p=p)
     return net
+
 
 def addDropoutRec(module, p):
     if isinstance(module, nn.modules.conv.Conv2d) or isinstance(module, nn.modules.Linear):
@@ -20,15 +21,18 @@ def addDropoutRec(module, p):
 
     return module
 
+
 class myDenseNet(nn.Module):
     """
     see https://github.com/pytorch/vision/blob/master/torchvision/models/densenet.py
     """
+
     def __init__(self, n_classes=3, in_features=1024):
         super(myDenseNet, self).__init__()
         net = models.densenet121(pretrained=True)
         self.features = net.features
-        self.classifier = nn.Sequential(Linear(in_features=in_features, out_features=n_classes), nn.Sigmoid())#Linear(in_features=in_features, out_features=n_classes)#
+        self.classifier = nn.Sequential(Linear(in_features=in_features, out_features=n_classes),
+                                        nn.Sigmoid())  # Linear(in_features=in_features, out_features=n_classes)#
 
     def forward(self, x):
         activations = []
@@ -45,10 +49,12 @@ class myDenseNet(nn.Module):
         activations.append(out)
         return activations
 
+
 class myDenseNet_v2(nn.Module):
     """
     see https://github.com/pytorch/vision/blob/master/torchvision/models/densenet.py
     """
+
     def __init__(self, n_classes=3, in_features=1024):
         super().__init__()
         model = models.densenet121(pretrained=True)
@@ -66,10 +72,10 @@ class myDenseNet_v2(nn.Module):
         output = self.classifer(regularization)
         return output
 
-def NewDenseNet(n_classes=3,p=0.2):
+
+def NewDenseNet(n_classes=3, p=0.2):
     DenseNet = myDenseNet(n_classes=n_classes)
-    if p>0:
-         DenseNet = addDropout(DenseNet, p=p)
+    if p > 0:
+        DenseNet = addDropout(DenseNet, p=p)
 
     return DenseNet
-

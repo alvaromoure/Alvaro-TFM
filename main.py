@@ -13,15 +13,8 @@ import plotly.express as px
 def main():
     torch.cuda.empty_cache()
     args = get_arguments()
-    wandb_config = dict(
-        batch_size = args.batch_size,
-        nEpochs = args.nEpochs,
-        learning_rate = args.lr,
-        model = args.model,
-        optimizer = args.opt
-    )
-    wandb.init(project='Alvaro-TFM-KAGGLE',entity='alvaromoureupm',config=wandb_config)
-    wandb.run.name = args.name
+    #wandb.init(project='Alvaro-TFM-KAGGLE',entity='alvaromoureupm',config=args.wandb)
+    #wandb.run.name = args.name
     SEED = args.seed
     torch.manual_seed(SEED)
     torch.backends.cudnn.deterministic = True

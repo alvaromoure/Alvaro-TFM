@@ -69,8 +69,6 @@ class ModelOutputs():
         output = self.model.classifier(output)
         return target_activations, output
 
-#def RecorrerCOVIDNet(model,x):
-
 def preprocess_image(img):
     means = [0.485, 0.456, 0.406]
     stds = [0.229, 0.224, 0.225]
@@ -92,7 +90,6 @@ def show_cam_on_image(img, mask, file_name):
     heatmap = np.float32(heatmap) / 255
     cam = heatmap + np.float32(img)
     cam = cam / np.max(cam)
-    #cv2.imwrite("cam.jpg", np.uint8(255 * cam))
     cv2.imwrite(file_name, np.uint8(255 * cam))
 
 
